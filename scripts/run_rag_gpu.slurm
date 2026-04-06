@@ -2,7 +2,7 @@
 #SBATCH -J hydro-rag
 #SBATCH -o slurm-%j.out
 #SBATCH -e slurm-%j.err
-#SBATCH -p gpu-a100
+#SBATCH -p gpu-h100
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --mem=0
