@@ -2,7 +2,7 @@
 
 A production-grade Retrieval-Augmented Generation (RAG) system built over 8,618 scientific papers from PubMed and ArXiv, serving hydrology, healthcare, and AI/ML domains.
 
-**[Live Demo](https://hydrorag-app.streamlit.app)** | **[Blog Post](coming soon)**
+**[Live Demo](https://hydrorag-app.streamlit.app)**
 
 ## What This Does
 
@@ -23,8 +23,14 @@ Systematic evaluation across 5 chunking strategies with 40 domain-expert test qu
 **Finding:** Sentence-based chunking achieved the highest MRR (0.817), outperforming the industry-recommended recursive splitting (0.728) by 12.2% on scientific literature.
 
 ## Architecture
-Papers (PubMed + ArXiv) → Chunking (5 strategies) → Embedding (MiniLM/BGE-M3/Qwen3)
-→ FAISS Vector Index → Query → Retrieve Top-K → LLM Generation → Cited Answer
+
+    Papers (PubMed + ArXiv)
+        → Chunking (5 strategies)
+        → Embedding (MiniLM / BGE-M3 / Qwen3)
+        → FAISS Vector Index
+        → Query → Retrieve Top-K
+        → LLM Generation
+        → Cited Answer
 
 ## Pipeline Components
 
@@ -42,53 +48,34 @@ Papers (PubMed + ArXiv) → Chunking (5 strategies) → Embedding (MiniLM/BGE-M3
 
 ## Tech Stack
 
-- Python, PyTorch, Hugging Face Transformers, Sentence-Transformers
-- FAISS for vector search
-- Streamlit for frontend
-- NVIDIA A100/H100 GPUs on TACC Lonestar6 (HPC/SLURM)
-- Distributed training infrastructure (DDP, FSDP)
-
-## Project Structure
-hydro-rag/
-├── src/
-│   ├── data_collection/    # Paper collection from PubMed + ArXiv
-│   ├── chunking/           # 5 chunking strategies
-│   ├── embedding/          # Embedding pipeline with FAISS
-│   ├── retrieval/          # RAG query engine + GPU inference
-│   ├── evaluation/         # Automated evaluation framework
-│   └── app/                # Streamlit frontend
-├── scripts/                # SLURM job scripts for HPC
-├── data/
-│   ├── raw/                # Collected papers
-│   ├── processed/          # Chunked papers
-│   ├── embeddings/         # FAISS indices + vectors
-│   └── evaluation/         # Test questions + results
-└── configs/
+Python, PyTorch, Hugging Face Transformers, Sentence-Transformers, FAISS, Streamlit, NVIDIA A100/H100 GPUs on TACC Lonestar6 (HPC/SLURM)
 
 ## Quick Start
-```bash
-# Install dependencies
-pip install sentence-transformers faiss-cpu streamlit
 
-# Collect papers
-python src/data_collection/collect_papers.py --source both --max-per-query 500
+    # Install dependencies
+    pip install sentence-transformers faiss-cpu streamlit
 
-# Chunk papers (all 5 strategies)
-python src/chunking/chunk_papers.py --strategy all
+    # Collect papers
+    python src/data_collection/collect_papers.py --source both --max-per-query 500
 
-# Embed chunks
-python src/embedding/embed_chunks.py --strategy context_enriched --model all-MiniLM-L6-v2
+    # Chunk papers (all 5 strategies)
+    python src/chunking/chunk_papers.py --strategy all
 
-# Run evaluation
-python src/evaluation/evaluate_retrieval.py
+    # Embed chunks
+    python src/embedding/embed_chunks.py --strategy context_enriched --model all-MiniLM-L6-v2
 
-# Launch frontend
-streamlit run src/app/streamlit_app.py
-```
+    # Run evaluation
+    python src/evaluation/evaluate_retrieval.py
+
+    # Launch frontend
+    streamlit run src/app/streamlit_app.py
 
 ## Author
 
 **Ijaz Ul Haq, Ph.D.** — AI Research Scientist
-University of Vermont | [Google Scholar](https://scholar.google.com/citations?user=qHTMlKIAAAAJ&hl=en) | [LinkedIn](https://linkedin.com)
+
+University of Vermont
+
+[Google Scholar](https://scholar.google.com/citations?user=qHTMlKIAAAAJ&hl=en) | [LinkedIn](https://linkedin.com) | [GitHub](https://github.com/ejokhan)
 
 Built on TACC Lonestar6 supercomputer through the NSF NAIRR Pilot program.
