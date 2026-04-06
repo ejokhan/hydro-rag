@@ -2,7 +2,7 @@
 
 A production-grade Retrieval-Augmented Generation (RAG) system built over 8,618 scientific papers from PubMed and ArXiv, serving hydrology, healthcare, and AI/ML domains.
 
-**[Live Demo](https://hydrorag-app.streamlit.app)**
+**[Live Demo](https://hydrorag.streamlit.app)**
 
 ## What This Does
 
