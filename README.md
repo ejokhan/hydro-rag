@@ -89,6 +89,6 @@ streamlit run src/app/streamlit_app.py
 ## Author
 
 **Ijaz Ul Haq, Ph.D.** — AI Research Scientist
-University of Vermont | [Google Scholar](https://scholar.google.com) | [LinkedIn](https://linkedin.com)
+University of Vermont | [Google Scholar](https://scholar.google.com/citations?user=qHTMlKIAAAAJ&hl=en) | [LinkedIn](https://linkedin.com)
 
 Built on TACC Lonestar6 supercomputer through the NSF NAIRR Pilot program.
