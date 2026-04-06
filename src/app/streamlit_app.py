@@ -165,6 +165,6 @@ st.divider()
 st.markdown(
     "Built by **Ijaz Ul Haq, Ph.D.** | "
     "[GitHub](https://github.com/ijaz-ul-haq) | "
-    "[Google Scholar](https://scholar.google.com) | "
+    "[Google Scholar](https://scholar.google.com/citations?user=qHTMlKIAAAAJ&hl=en) | "
     "[LinkedIn](https://linkedin.com)"
 )
