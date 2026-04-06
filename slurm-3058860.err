@@ -1,0 +1,50 @@
+/work/10655/ejokhan123/ls6/miniconda3/envs/rag/lib/python3.11/site-packages/torch/cuda/__init__.py:180: UserWarning: CUDA initialization: The NVIDIA driver on your system is too old (found version 12080). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver. (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  return torch._C._cuda_getDeviceCount() > 0
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights:   6%|▌         | 6/103 [00:00<00:01, 57.51it/s]Loading weights:  21%|██▏       | 22/103 [00:00<00:00, 105.89it/s]Loading weights:  45%|████▍     | 46/103 [00:00<00:00, 160.97it/s]Loading weights:  82%|████████▏ | 84/103 [00:00<00:00, 230.23it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 213.83it/s]
+[1mBertModel LOAD REPORT[0m from: sentence-transformers/all-MiniLM-L6-v2
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+A new version of the following files was downloaded from https://huggingface.co/microsoft/Phi-3-mini-4k-instruct:
+- configuration_phi3.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+`torch_dtype` is deprecated! Use `dtype` instead!
+A new version of the following files was downloaded from https://huggingface.co/microsoft/Phi-3-mini-4k-instruct:
+- modeling_phi3.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+`flash-attention` package not found, consider installing for better performance: No module named 'flash_attn'.
+Current `flash-attention` does not support `window_size`. Either upgrade or use `attn_implementation='eager'`.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:57<00:57, 57.27s/it]Fetching 2 files: 100%|██████████| 2/2 [00:57<00:00, 28.64s/it]
+Traceback (most recent call last):
+  File "/work/10655/ejokhan123/ls6/hydro-rag/src/retrieval/rag_gpu.py", line 144, in <module>
+    main()
+  File "/work/10655/ejokhan123/ls6/hydro-rag/src/retrieval/rag_gpu.py", line 74, in main
+    model = AutoModelForCausalLM.from_pretrained(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/10655/ejokhan123/ls6/miniconda3/envs/rag/lib/python3.11/site-packages/transformers/models/auto/auto_factory.py", line 380, in from_pretrained
+    return model_class.from_pretrained(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/10655/ejokhan123/ls6/miniconda3/envs/rag/lib/python3.11/site-packages/transformers/modeling_utils.py", line 4089, in from_pretrained
+    model = cls(config, *model_args, **model_kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/10655/ejokhan123/ls6/hydro-rag/.hf_cache/modules/transformers_modules/microsoft/Phi_hyphen_3_hyphen_mini_hyphen_4k_hyphen_instruct/f39ac1d28e925b323eae81227eaba4464caced4e/modeling_phi3.py", line 1163, in __init__
+    self.model = Phi3Model(config)
+                 ^^^^^^^^^^^^^^^^^
+  File "/work/10655/ejokhan123/ls6/hydro-rag/.hf_cache/modules/transformers_modules/microsoft/Phi_hyphen_3_hyphen_mini_hyphen_4k_hyphen_instruct/f39ac1d28e925b323eae81227eaba4464caced4e/modeling_phi3.py", line 1004, in __init__
+    [Phi3DecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
+  File "/work/10655/ejokhan123/ls6/hydro-rag/.hf_cache/modules/transformers_modules/microsoft/Phi_hyphen_3_hyphen_mini_hyphen_4k_hyphen_instruct/f39ac1d28e925b323eae81227eaba4464caced4e/modeling_phi3.py", line 1004, in <listcomp>
+    [Phi3DecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/10655/ejokhan123/ls6/hydro-rag/.hf_cache/modules/transformers_modules/microsoft/Phi_hyphen_3_hyphen_mini_hyphen_4k_hyphen_instruct/f39ac1d28e925b323eae81227eaba4464caced4e/modeling_phi3.py", line 796, in __init__
+    self.self_attn = PHI3_ATTENTION_CLASSES[config._attn_implementation](config, layer_idx=layer_idx)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/10655/ejokhan123/ls6/hydro-rag/.hf_cache/modules/transformers_modules/microsoft/Phi_hyphen_3_hyphen_mini_hyphen_4k_hyphen_instruct/f39ac1d28e925b323eae81227eaba4464caced4e/modeling_phi3.py", line 286, in __init__
+    self._init_rope()
+  File "/work/10655/ejokhan123/ls6/hydro-rag/.hf_cache/modules/transformers_modules/microsoft/Phi_hyphen_3_hyphen_mini_hyphen_4k_hyphen_instruct/f39ac1d28e925b323eae81227eaba4464caced4e/modeling_phi3.py", line 296, in _init_rope
+    scaling_type = self.config.rope_scaling["type"]
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+KeyError: 'type'

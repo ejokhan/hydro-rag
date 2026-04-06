@@ -1,0 +1,48 @@
+Loaded 40 test questions
+Found 5 configurations to evaluate
+
+Evaluating: data/embeddings/context_enriched_all-MiniLM-L6-v2
+
+  Loading index from data/embeddings/context_enriched_all-MiniLM-L6-v2...
+
+Evaluating: data/embeddings/fixed_all-MiniLM-L6-v2
+
+  Loading index from data/embeddings/fixed_all-MiniLM-L6-v2...
+
+Evaluating: data/embeddings/recursive_all-MiniLM-L6-v2
+
+  Loading index from data/embeddings/recursive_all-MiniLM-L6-v2...
+
+Evaluating: data/embeddings/semantic_all-MiniLM-L6-v2
+
+  Loading index from data/embeddings/semantic_all-MiniLM-L6-v2...
+
+Evaluating: data/embeddings/sentence_all-MiniLM-L6-v2
+
+  Loading index from data/embeddings/sentence_all-MiniLM-L6-v2...
+
+==========================================================================================
+Configuration                                        Hit Rate      MRR      P@5    Latency
+==========================================================================================
+sentence_all-MiniLM-L6-v2                               0.896    0.817    0.795      8.8ms
+context_enriched_all-MiniLM-L6-v2                       0.938    0.809    0.855    131.3ms
+fixed_all-MiniLM-L6-v2                                  0.912    0.749    0.800      8.3ms
+semantic_all-MiniLM-L6-v2                               0.917    0.740    0.800      7.6ms
+recursive_all-MiniLM-L6-v2                              0.917    0.728    0.825      7.7ms
+==========================================================================================
+
+Best config: data/embeddings/sentence_all-MiniLM-L6-v2
+
+Breakdown by domain (best config):
+  Domain            Hit Rate      MRR      P@5    Count
+  hydrology            0.956    0.839    0.867       15
+  healthcare           0.950    0.775    0.880       10
+  llm                  0.967    1.000    0.820       10
+  cross                0.467    0.467    0.360        5
+
+Breakdown by difficulty (best config):
+  easy       MRR: 0.933
+  medium     MRR: 0.883
+  hard       MRR: 0.542
+
+Full results saved to data/evaluation/retrieval_results.json

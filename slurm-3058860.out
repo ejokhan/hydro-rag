@@ -1,0 +1,9 @@
+============================================
+HYDRO-RAG: GPU Inference with Open-Source LLM
+============================================
+GPU available: False
+
+[1/3] Loading retrieval system...
+Loaded FAISS index: 21012 vectors
+
+[2/3] Loading LLM (microsoft/Phi-3-mini-4k-instruct)...
