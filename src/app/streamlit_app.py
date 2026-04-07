@@ -306,7 +306,7 @@ with st.sidebar:
     
     # Groq API key input
     st.markdown("""<div class="sidebar-section"><h4>Configuration</h4></div>""", unsafe_allow_html=True)
-    groq_key = st.text_input("Groq API Key (free at console.groq.com)", type="password", value=os.environ.get("GROQ_API_KEY", ""))
+    groq_key = os.environ.get("GROQ_API_KEY", st.secrets.get("GROQ_API_KEY", ""))
     top_k = st.slider("Results to retrieve", 3, 10, 5)
     show_chunks = st.checkbox("Show retrieved text", value=True)
     
