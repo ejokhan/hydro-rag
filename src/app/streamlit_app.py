@@ -1,6 +1,5 @@
 """
 HydroRAG - Scientific Literature Q&A System
-Professional Streamlit app with live LLM answers via Groq
 """
 import streamlit as st
 import json
@@ -16,197 +15,85 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ---- CUSTOM CSS ----
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
-/* Global */
-.stApp {
-    font-family: 'DM Sans', sans-serif;
-}
+.stApp { font-family: 'Source Sans 3', sans-serif; }
 
-/* Header */
-.main-header {
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c4a6e 100%);
-    padding: 2.5rem 2rem;
-    border-radius: 16px;
-    margin-bottom: 2rem;
-    color: white;
-    position: relative;
-    overflow: hidden;
+div[data-testid="stMainBlockContainer"] { max-width: 1100px; margin: 0 auto; }
+
+.hero {
+    background: #0B1A2E;
+    padding: 2rem 2.5rem;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    color: #fff;
 }
-.main-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, transparent 70%);
-    border-radius: 50%;
+.hero h1 { font-size: 2rem; font-weight: 700; margin: 0 0 0.3rem; }
+.hero p { font-size: 0.95rem; color: #94A3B8; margin: 0; }
+.hero-stats {
+    display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap;
 }
-.main-header h1 {
-    font-size: 2.4rem;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: -0.5px;
-}
-.main-header p {
-    font-size: 1.05rem;
-    opacity: 0.85;
-    margin-top: 0.5rem;
-    font-weight: 400;
-}
-.header-stats {
-    display: flex;
-    gap: 2rem;
-    margin-top: 1.2rem;
-}
-.header-stat {
-    background: rgba(255,255,255,0.1);
-    padding: 0.6rem 1.2rem;
+.hero-stat {
+    background: rgba(255,255,255,0.07);
+    padding: 0.5rem 1rem;
     border-radius: 8px;
-    backdrop-filter: blur(10px);
 }
-.header-stat .num {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #38bdf8;
-}
-.header-stat .label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.7;
-}
+.hero-stat .val { font-size: 1.15rem; font-weight: 700; color: #38BDF8; }
+.hero-stat .lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: #64748B; }
 
-/* Search box */
-.stTextInput > div > div > input {
-    font-size: 1.1rem !important;
-    padding: 0.8rem 1rem !important;
-    border-radius: 12px !important;
-    border: 2px solid #e2e8f0 !important;
-    font-family: 'DM Sans', sans-serif !important;
+.answer-card {
+    background: #F0F9FF;
+    border-left: 4px solid #0284C7;
+    border-radius: 0 10px 10px 0;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0 1.5rem;
 }
-.stTextInput > div > div > input:focus {
-    border-color: #0c4a6e !important;
-    box-shadow: 0 0 0 3px rgba(12,74,110,0.1) !important;
-}
+.answer-card h4 { margin: 0 0 0.5rem; color: #0369A1; font-size: 0.95rem; }
+.answer-card .text { color: #1E293B; font-size: 0.92rem; line-height: 1.65; }
+.answer-card .meta { font-size: 0.78rem; color: #64748B; margin-top: 0.5rem; }
 
-/* Result cards */
-.result-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    transition: all 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.result-card:hover {
-    border-color: #0c4a6e;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-.result-title {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #0f172a;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-}
-.result-meta {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 0.8rem;
-    flex-wrap: wrap;
-}
-.meta-tag {
-    font-size: 0.78rem;
-    padding: 0.25rem 0.7rem;
-    border-radius: 6px;
-    font-weight: 500;
-    font-family: 'JetBrains Mono', monospace;
-}
-.tag-score { background: #ecfdf5; color: #065f46; }
-.tag-year { background: #eff6ff; color: #1e40af; }
-.tag-pubmed { background: #f0fdf4; color: #166534; }
-.tag-arxiv { background: #eef2ff; color: #3730a3; }
-.result-text {
-    font-size: 0.9rem;
-    color: #475569;
-    line-height: 1.6;
-    border-left: 3px solid #e2e8f0;
-    padding-left: 1rem;
-    margin-top: 0.8rem;
-}
-
-/* Answer box */
-.answer-box {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    border: 1px solid #bae6fd;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-}
-.answer-box h3 {
-    color: #0c4a6e;
-    font-size: 1.1rem;
-    margin-bottom: 0.8rem;
-}
-.answer-text {
-    color: #1e293b;
-    font-size: 0.95rem;
-    line-height: 1.7;
-}
-
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background: #f8fafc;
-}
-.sidebar-section {
-    background: white;
-    border: 1px solid #e2e8f0;
+.paper-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
     border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.7rem;
+    transition: border-color 0.15s;
 }
-.sidebar-section h4 {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #64748b;
-    margin-bottom: 0.8rem;
+.paper-card:hover { border-color: #0284C7; }
+.paper-title { font-size: 0.95rem; font-weight: 600; color: #0F172A; line-height: 1.35; }
+.paper-meta { display: flex; gap: 0.5rem; margin-top: 0.4rem; flex-wrap: wrap; }
+.tag {
+    font-size: 0.72rem; padding: 0.15rem 0.55rem; border-radius: 5px;
+    font-weight: 500; font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.tag-score { background: #ECFDF5; color: #065F46; }
+.tag-year { background: #EFF6FF; color: #1E40AF; }
+.tag-pm { background: #F0FDF4; color: #166534; }
+.tag-ax { background: #EEF2FF; color: #3730A3; }
+.paper-text {
+    font-size: 0.82rem; color: #64748B; line-height: 1.55;
+    border-left: 2px solid #E2E8F0; padding-left: 0.8rem;
+    margin-top: 0.6rem;
+}
+.paper-authors { font-size: 0.8rem; color: #64748B; margin-top: 0.3rem; }
+
+.sample-btn button {
+    font-size: 0.82rem !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 8px !important;
 }
 
-/* Metrics row */
-.metric-row {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.3rem;
+.footer-text {
+    text-align: center; padding: 1.5rem 0; color: #94A3B8;
+    font-size: 0.82rem; border-top: 1px solid #E2E8F0; margin-top: 2rem;
 }
-.metric-label { color: #64748b; font-size: 0.85rem; }
-.metric-value { color: #0f172a; font-weight: 600; font-size: 0.85rem; }
-
-/* Footer */
-.footer {
-    text-align: center;
-    padding: 2rem 0;
-    color: #94a3b8;
-    font-size: 0.85rem;
-    border-top: 1px solid #e2e8f0;
-    margin-top: 3rem;
-}
-.footer a { color: #0c4a6e; text-decoration: none; font-weight: 500; }
-
-/* Hide streamlit branding */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
+.footer-text a { color: #0284C7; text-decoration: none; }
 </style>
 """, unsafe_allow_html=True)
 
-# ---- LOAD RAG SYSTEM ----
 @st.cache_resource
 def load_rag_system():
     from sentence_transformers import SentenceTransformer
@@ -227,8 +114,7 @@ def retrieve(query, index, texts, metadata, model, top_k=5):
     results = []
     for score, idx in zip(scores[0], indices[0]):
         results.append({
-            "text": texts[idx],
-            "score": float(score),
+            "text": texts[idx], "score": float(score),
             "title": metadata[idx].get("title", ""),
             "authors": metadata[idx].get("authors", []),
             "year": metadata[idx].get("year", ""),
@@ -238,10 +124,8 @@ def retrieve(query, index, texts, metadata, model, top_k=5):
     return results, latency
 
 def generate_answer(query, chunks, api_key):
-    """Generate answer using Groq (free Llama-3.3 70B)"""
     from groq import Groq
     client = Groq(api_key=api_key)
-    
     context = ""
     for i, chunk in enumerate(chunks):
         authors = chunk["authors"]
@@ -249,151 +133,120 @@ def generate_answer(query, chunks, api_key):
             author_str = authors[0] if len(authors) == 1 else f"{authors[0]} et al." if authors else "Unknown"
         else:
             author_str = str(authors)
-        context += f"\n[{i+1}] {chunk['title']} ({author_str}, {chunk['year']})\n"
-        context += f"{chunk['text']}\n"
-    
+        context += f"\n[{i+1}] {chunk['title']} ({author_str}, {chunk['year']})\n{chunk['text']}\n"
     start = time.time()
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
-            {"role": "system", "content": "You are a scientific research assistant. Answer based ONLY on the provided papers. Cite sources using [1], [2], etc. Be concise and accurate. If the papers don't contain enough information, say so."},
-            {"role": "user", "content": f"RETRIEVED PAPERS:\n{context}\n\nQUESTION: {query}\n\nANSWER:"}
+            {"role": "system", "content": "You are a scientific research assistant. Answer based ONLY on the provided papers. Cite using [1], [2], etc. Be concise and accurate."},
+            {"role": "user", "content": f"PAPERS:\n{context}\n\nQUESTION: {query}\n\nANSWER:"}
         ],
-        max_tokens=800,
-        temperature=0.3,
+        max_tokens=600, temperature=0.3,
     )
-    gen_time = time.time() - start
-    return response.choices[0].message.content, gen_time
+    return response.choices[0].message.content, time.time() - start
 
-# ---- HEADER ----
+# ---- HERO ----
 st.markdown("""
-<div class="main-header">
+<div class="hero">
     <h1>🌊 HydroRAG</h1>
-    <p>AI-powered scientific literature Q&A across hydrology, environmental science, and healthcare</p>
-    <div class="header-stats">
-        <div class="header-stat">
-            <div class="num">8,618</div>
-            <div class="label">Papers Indexed</div>
-        </div>
-        <div class="header-stat">
-            <div class="num">21,012</div>
-            <div class="label">Searchable Chunks</div>
-        </div>
-        <div class="header-stat">
-            <div class="num">0.809</div>
-            <div class="label">MRR Score</div>
-        </div>
-        <div class="header-stat">
-            <div class="num">Llama 3.3 70B</div>
-            <div class="label">LLM via Groq</div>
-        </div>
+    <p>Ask any question about scientific literature. Get AI-generated answers with citations.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="val">8,618</div><div class="lbl">Papers</div></div>
+        <div class="hero-stat"><div class="val">21,012</div><div class="lbl">Indexed chunks</div></div>
+        <div class="hero-stat"><div class="val">0.809</div><div class="lbl">MRR score</div></div>
+        <div class="hero-stat"><div class="val">Llama 3.3 70B</div><div class="lbl">Answer engine</div></div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # ---- SIDEBAR ----
 with st.sidebar:
+    st.markdown("### About")
     st.markdown("""
-    <div class="sidebar-section">
-        <h4>About</h4>
-        <p style="font-size: 0.9rem; color: #475569; line-height: 1.5;">
-        HydroRAG retrieves relevant scientific papers and generates cited answers 
-        using retrieval-augmented generation (RAG). Built over 8,618 papers from 
-        PubMed and ArXiv.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    HydroRAG searches 8,618 scientific papers from PubMed and ArXiv
+    and generates cited answers using Llama 3.3 70B.
     
-    # Groq API key input
-    st.markdown("""<div class="sidebar-section"><h4>Configuration</h4></div>""", unsafe_allow_html=True)
-    groq_key = os.environ.get("GROQ_API_KEY", st.secrets.get("GROQ_API_KEY", ""))
+    Built by **Ijaz Ul Haq, Ph.D.**  
+    University of Vermont
+    """)
+    st.divider()
+    st.markdown("### Settings")
     top_k = st.slider("Results to retrieve", 3, 10, 5)
-    show_chunks = st.checkbox("Show retrieved text", value=True)
+    show_text = st.checkbox("Show retrieved text", value=True)
     
-    st.markdown("""
-    <div class="sidebar-section">
-        <h4>Retrieval Metrics</h4>
-        <div class="metric-row"><span class="metric-label">MRR</span><span class="metric-value">0.809</span></div>
-        <div class="metric-row"><span class="metric-label">Precision@5</span><span class="metric-value">0.855</span></div>
-        <div class="metric-row"><span class="metric-label">Hit Rate</span><span class="metric-value">0.938</span></div>
-        <div class="metric-row"><span class="metric-label">Avg Latency</span><span class="metric-value">~8ms</span></div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.divider()
+    st.markdown("### Evaluation metrics")
+    mc1, mc2 = st.columns(2)
+    mc1.metric("MRR", "0.809")
+    mc2.metric("P@5", "0.855")
+    mc3, mc4 = st.columns(2)
+    mc3.metric("Hit rate", "0.938")
+    mc4.metric("Latency", "~8ms")
     
-    st.markdown("""
-    <div class="sidebar-section">
-        <h4>Chunking Comparison</h4>
-    </div>
-    """, unsafe_allow_html=True)
+    st.divider()
+    st.markdown("### Chunking comparison")
     st.dataframe({
-        "Strategy": ["Sentence", "Context-Enriched", "Recursive", "Semantic", "Fixed"],
+        "Strategy": ["Sentence", "Context-enriched", "Recursive", "Semantic", "Fixed"],
         "MRR": [0.817, 0.809, 0.728, 0.740, 0.749],
+        "P@5": [0.795, 0.855, 0.825, 0.800, 0.800],
     }, hide_index=True, use_container_width=True)
     
-    st.markdown("""
-    <div class="sidebar-section">
-        <h4>Tech Stack</h4>
-        <p style="font-size: 0.82rem; color: #475569; line-height: 1.6;">
-        <b>Embedding:</b> all-MiniLM-L6-v2<br>
-        <b>Vector DB:</b> FAISS (21,012 vectors)<br>
-        <b>LLM:</b> Llama 3.3 70B via Groq<br>
-        <b>Chunking:</b> Context-Enriched<br>
-        <b>Data:</b> PubMed + ArXiv
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.divider()
+    st.markdown("### Tech stack")
+    st.caption("Embedding: all-MiniLM-L6-v2")
+    st.caption("Vector DB: FAISS (21,012 vectors)")
+    st.caption("LLM: Llama 3.3 70B via Groq")
+    st.caption("Data: PubMed + ArXiv")
+    st.caption("Infra: TACC Lonestar6 A100/H100")
 
-# ---- LOAD SYSTEM ----
+# ---- LOAD ----
 with st.spinner("Loading search engine..."):
     index, texts, metadata, model = load_rag_system()
 
-# ---- SAMPLE QUESTIONS ----
+# ---- SAMPLES ----
 st.markdown("**Try a question:**")
-sample_cols = st.columns(3)
+cols = st.columns(3)
 samples = [
     "What ML models work best for flood prediction?",
     "How is anomaly detection applied to water quality?",
-    "What are transformer models used for in hydrology?",
-    "How can NLP support clinical decision making?",
-    "What challenges exist in streamflow forecasting?",
-    "What evaluation metrics are used for RAG systems?",
+    "Transformer models in streamflow forecasting",
+    "NLP for clinical decision support",
+    "Challenges in deep learning for hydrology",
+    "Evaluation metrics for RAG systems",
 ]
-for i, sample in enumerate(samples):
-    with sample_cols[i % 3]:
-        if st.button(sample, key=f"sample_{i}", use_container_width=True):
-            st.session_state.query = sample
+for i, s in enumerate(samples):
+    with cols[i % 3]:
+        if st.button(s, key=f"s{i}", use_container_width=True):
+            st.session_state.query = s
 
 # ---- SEARCH ----
 query = st.text_input(
-    "Ask a question about scientific literature:",
+    "Ask a question:",
     value=st.session_state.get("query", ""),
     placeholder="e.g., What deep learning methods are used for groundwater prediction?",
-    label_visibility="collapsed"
 )
 
 if query:
-    # Retrieve
     with st.spinner("Searching 21,012 chunks..."):
         results, latency = retrieve(query, index, texts, metadata, model, top_k=top_k)
     
-    # Generate answer if API key available
+    # Generate answer
+    groq_key = os.environ.get("GROQ_API_KEY", "") or st.secrets.get("GROQ_API_KEY", "")
     if groq_key:
         with st.spinner("Generating answer with Llama 3.3 70B..."):
             try:
                 answer, gen_time = generate_answer(query, results, groq_key)
                 st.markdown(f"""
-                <div class="answer-box">
-                    <h3>🤖 AI Answer <span style="font-size: 0.8rem; font-weight: 400; color: #64748b;">(generated in {gen_time:.1f}s by Llama 3.3 70B)</span></h3>
-                    <div class="answer-text">{answer}</div>
+                <div class="answer-card">
+                    <h4>AI answer</h4>
+                    <div class="text">{answer}</div>
+                    <div class="meta">Generated in {gen_time:.1f}s by Llama 3.3 70B via Groq</div>
                 </div>
                 """, unsafe_allow_html=True)
             except Exception as e:
-                st.warning(f"Answer generation failed: {str(e)[:100]}. Showing retrieved papers below.")
-    else:
-        st.info("Add a free Groq API key in the sidebar to get AI-generated answers. Get one at console.groq.com")
+                st.warning(f"Answer generation failed: {str(e)[:100]}")
     
-    # Show results
-    st.markdown(f"**Retrieved {len(results)} papers** in {latency:.0f}ms")
+    st.markdown(f"**{len(results)} papers retrieved** in {latency:.0f}ms")
     
     for i, r in enumerate(results):
         authors = r["authors"]
@@ -402,42 +255,39 @@ if query:
         else:
             author_str = str(authors)
         
-        source_class = "tag-pubmed" if r["source"] == "pubmed" else "tag-arxiv"
-        source_label = "PubMed" if r["source"] == "pubmed" else "ArXiv"
+        src_class = "tag-pm" if r["source"] == "pubmed" else "tag-ax"
+        src_label = "PubMed" if r["source"] == "pubmed" else "ArXiv"
         
-        chunk_html = ""
-        if show_chunks:
-            text_preview = r["text"][:500].replace("\n", "<br>")
-            chunk_html = f'<div class="result-text">{text_preview}...</div>'
+        text_html = ""
+        if show_text:
+            preview = r["text"][:400].replace("\n", " ")
+            text_html = f'<div class="paper-text">{preview}...</div>'
         
         st.markdown(f"""
-        <div class="result-card">
-            <div class="result-title">[{i+1}] {r['title']}</div>
-            <div class="result-meta">
-                <span class="meta-tag tag-score">Score: {r['score']:.4f}</span>
-                <span class="meta-tag tag-year">{r['year']}</span>
-                <span class="meta-tag {source_class}">{source_label}</span>
+        <div class="paper-card">
+            <div class="paper-title">[{i+1}] {r['title']}</div>
+            <div class="paper-meta">
+                <span class="tag tag-score">{r['score']:.4f}</span>
+                <span class="tag tag-year">{r['year']}</span>
+                <span class="tag {src_class}">{src_label}</span>
             </div>
-            <div style="font-size: 0.85rem; color: #64748b;">{author_str} {('| ' + r['journal']) if r.get('journal') else ''}</div>
-            {chunk_html}
+            <div class="paper-authors">{author_str}{(' — ' + r['journal']) if r.get('journal') else ''}</div>
+            {text_html}
         </div>
         """, unsafe_allow_html=True)
-
 else:
     st.markdown("""
-    <div style="text-align: center; padding: 3rem; color: #94a3b8;">
-        <p style="font-size: 1.2rem;">Type a question above or click a sample to get started</p>
-        <p style="font-size: 0.9rem;">Searches across hydrology, water quality, climate science, healthcare, and AI/ML literature</p>
+    <div style="text-align: center; padding: 3rem 1rem; color: #94A3B8;">
+        <p style="font-size: 1.1rem;">Ask a question about scientific literature</p>
+        <p style="font-size: 0.85rem;">Covers hydrology, water quality, climate science, healthcare, and AI/ML</p>
     </div>
     """, unsafe_allow_html=True)
 
-# ---- FOOTER ----
 st.markdown("""
-<div class="footer">
+<div class="footer-text">
     Built by <a href="https://scholar.google.com/citations?user=qHTMlKIAAAAJ&hl=en">Ijaz Ul Haq, Ph.D.</a> | 
     <a href="https://github.com/ejokhan/hydro-rag">GitHub</a> | 
-    <a href="https://linkedin.com">LinkedIn</a> | 
-    University of Vermont<br>
-    Powered by FAISS, Sentence-Transformers, and Llama 3.3 70B via Groq
+    <a href="https://linkedin.com">LinkedIn</a><br>
+    University of Vermont | Powered by FAISS + Llama 3.3 70B via Groq
 </div>
 """, unsafe_allow_html=True)
