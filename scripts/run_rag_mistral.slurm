@@ -9,7 +9,7 @@
 #SBATCH -t 02:00:00
 #SBATCH -A TG-NAIRR240491
 
-module load cuda/12.2
+module load cuda/12.0
 source /work/10655/ejokhan123/ls6/miniconda3/bin/activate
 conda activate rag
 export HF_HOME=/work/10655/ejokhan123/ls6/hydro-rag/.hf_cache

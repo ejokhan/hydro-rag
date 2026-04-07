@@ -10,7 +10,7 @@
 #SBATCH -A TG-NAIRR240491
 
 # Load CUDA first
-module load cuda/12.2
+module load cuda/12.0
 
 # Activate environment
 source /work/10655/ejokhan123/ls6/miniconda3/bin/activate
